@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AP 信道规划助手</title>
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div class="wrap">
+
+  <div class="top">
+    <div>
+      <h1>AP 信道规划助手</h1>
+      <p>从 WLAN API 扫描结果出发，圈出本公司 AP，给出信道与频宽的规划建议</p>
+    </div>
+    <div class="srcbar">
+      <span class="src-tag" id="dataTag">正在读取扫描数据…</span>
+      <button class="btn sm" id="btnRescan" title="调用本机 WLAN API 重新扫描一次">重新扫描</button>
+    </div>
+  </div>
+
+  <div id="scanNotice"></div>
+
+  <div class="stepbar">
+    <div class="step on" data-step="1"><div class="num">1</div>扫描结果</div>
+    <div class="step" data-step="2"><div class="num">2</div>确认相邻</div>
+    <div class="step" data-step="3"><div class="num">3</div>规划建议</div>
+  </div>
+
+  <!-- ============================ STEP 1 ============================ -->
+  <section id="s1">
+    <div class="grid4">
+      <div class="stat"><div class="k">无线接口</div><div class="v" id="statIface" style="font-size:14px;padding-top:5px">—</div></div>
+      <div class="stat"><div class="k">发现 BSS 总数</div><div class="v" id="statTotal">—</div></div>
+      <div class="stat"><div class="k">本公司（你勾选的）</div><div class="v" style="color:var(--blue)" id="statMine">—</div><div class="k" id="statAps" style="margin-top:2px">—</div></div>
+      <div class="stat"><div class="k">邻近外部 BSS</div><div class="v" style="color:var(--amber)" id="statOther">—</div></div>
+    </div>
+
+    <div class="card">
+      <div class="card-head">
+        <h2>一、圈出本公司的 AP，并告诉程序它们的分组</h2>
+        <span class="tag gray">数据来源：WlanGetNetworkBssList</span>
+      </div>
+      <p class="desc">扫描到的所有 BSS 都在下面。由你确认哪些属于本公司、哪些 BSS 属于同一台 AP —— 没有任何 API 能直接告诉你「这两条 BSS 是同一台 AP 的双频」，所以这一步必须人工核对。</p>
+
+      <div class="filters">
+        <div class="field">
+          <label>SSID 前缀</label>
+          <input type="text" id="fSsid" placeholder="例如 CorpWiFi">
+        </div>
+        <div class="field">
+          <label>BSSID / OUI 前缀</label>
+          <input type="text" id="fOui" placeholder="例如 A4:5E:60">
+        </div>
+        <button class="btn primary" id="btnApply">按规则自动勾选</button>
+        <button class="btn" id="btnClear">清空选择</button>
+        <div style="flex:1"></div>
+        <div class="field">
+          <label>AP 分组规则</label>
+          <select id="fGroup" style="height:34px;padding:0 9px;border:1px solid var(--line2);border-radius:8px;font:inherit;font-size:13px;background:#fff;color:var(--text)"></select>
+        </div>
+        <div class="field">
+          <label>显示范围</label>
+          <select id="fBand" style="height:34px;padding:0 9px;border:1px solid var(--line2);border-radius:8px;font:inherit;font-size:13px;background:#fff;color:var(--text)"></select>
+        </div>
+      </div>
+
+      <div class="tablewrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="width:34px"></th>
+              <th>SSID</th>
+              <th>BSSID</th>
+              <th>频段</th>
+              <th>信道</th>
+              <th>中心频率</th>
+              <th>频宽</th>
+              <th>信号</th>
+              <th>PHY</th>
+              <th>加密</th>
+              <th style="width:132px">归属 AP</th>
+            </tr>
+          </thead>
+          <tbody id="tbody"></tbody>
+        </table>
+      </div>
+
+      <p class="note" id="groupHint" style="margin-top:12px"></p>
+
+      <div class="footbar" style="margin-top:16px">
+        <div class="hint" id="selHint">已勾选 0 个 BSS</div>
+        <button class="btn primary" data-go="2">下一步：逐台确认相邻</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ STEP 2 ============================ -->
+  <section id="s2" class="hidden">
+    <div class="card">
+      <div class="card-head">
+        <h2>二、一台一台确认：谁靠近谁</h2>
+        <span class="tag gray" id="adjProgress">第 1 / 8 台</span>
+      </div>
+      <p class="desc">相邻 = 两台 AP 互相靠近，会互相抢同一段空口。只有相邻的 AP 必须错开信道，离得远、互相影响不到的可以复用同一信道。</p>
+
+      <div class="apnav" id="apnav"></div>
+
+      <div class="askwrap">
+        <div class="askcard">
+          <div class="askhead">
+            <div>
+              <div class="asktitle" id="askTitle">AP1 旁边还有哪些 AP？</div>
+              <div class="asksub" id="askSub"></div>
+            </div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap">
+              <button class="btn sm" id="btnAllY">全部靠近</button>
+              <button class="btn sm" id="btnAllN">全部不靠近</button>
+              <button class="btn sm" id="btnReGuess">恢复推测值</button>
+            </div>
+          </div>
+          <div class="asklist" id="askList"></div>
+        </div>
+
+        <aside class="sidecard">
+          <h3>已确认的相邻关系</h3>
+          <div class="adjs" id="adjSummary"></div>
+        </aside>
+      </div>
+
+      <div class="footbar" style="margin-top:20px">
+        <button class="btn" id="btnPrev">上一台</button>
+        <div class="hint" id="askHint"></div>
+        <button class="btn primary" id="btnNext">这台确认了，下一台</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================ STEP 3 ============================ -->
+  <section id="s3" class="hidden">
+    <div class="card">
+      <div class="card-head">
+        <h2>三、规划建议</h2>
+        <span class="tag gray" id="algoTag">算法：按干扰惩罚排序 + 相邻避让贪心</span>
+      </div>
+      <p class="desc">以下建议由本次扫描到的邻频占用、以及你在上一步确认的相邻关系实时算出。</p>
+
+      <h3 class="sec" style="margin-bottom:4px">哪些 AP 保留 2.4 GHz？</h3>
+      <p class="note" style="margin:0 0 10px" id="planGridNote"></p>
+      <div class="plan" id="planGrid" style="margin-bottom:12px"></div>
+      <div style="margin-bottom:22px">
+        <button class="btn sm" id="btnSlim">按建议精简到不冲突的最小集合</button>
+        <button class="btn sm" id="btnAll24" style="margin-left:6px">全部开启</button>
+      </div>
+
+      <div id="banners"></div>
+
+      <div class="out">
+        <div class="outcol">
+          <h3>5 GHz <span id="h5"></span></h3>
+          <table class="aptable" id="tbl5"></table>
+          <p class="note" id="n5"></p>
+        </div>
+        <div class="outcol">
+          <h3>2.4 GHz <span id="h24"></span></h3>
+          <table class="aptable" id="tbl24"></table>
+          <p class="note" id="n24"></p>
+        </div>
+      </div>
+
+      <h3 class="sec" style="margin:22px 0 10px">信道占用对照</h3>
+      <div class="spectrum" id="spectrum"></div>
+
+      <h3 class="sec" style="margin:24px 0 10px">本次扫描的发现</h3>
+      <div class="why" id="findings"></div>
+
+      <h3 class="sec" style="margin:24px 0 10px">为什么这样设置（通用原理）</h3>
+      <div class="why" id="why"></div>
+
+      <div class="footbar" style="margin-top:22px">
+        <button class="btn" data-go="2">上一步</button>
+        <button class="btn primary" id="btnExport">导出建议</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<script src="data/scan.js"></script>
+<script src="js/config.js"></script>
+<script src="js/store.js"></script>
+<script src="js/scan-data.js"></script>
+<script src="js/step1-scan.js"></script>
+<script src="js/step2-adjacency.js"></script>
+<script src="js/step3-plan.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>

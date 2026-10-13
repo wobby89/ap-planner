@@ -1,0 +1,271 @@
+/* ==========================================================================
+   AP 信道规划助手 · 样式
+   页面结构见 index.html，交互逻辑见 js/ 目录。
+   ========================================================================== */
+
+:root{
+  --bg:#f5f6f8; --card:#ffffff; --line:#e4e7ec; --line2:#d0d5dd;
+  --text:#111827; --text2:#5b6472; --text3:#98a2b3;
+  --blue:#2563eb; --blue-bg:#eff4ff; --blue-line:#bfd3ff;
+  --amber:#b45309; --amber-bg:#fffbeb; --amber-line:#fde3a7;
+  --red:#b42318; --red-bg:#fef3f2; --red-line:#fecdca;
+  --green:#067647; --green-bg:#ecfdf3; --green-line:#a9e3c4;
+  --violet:#6b21a8; --violet-bg:#f4f0ff; --violet-line:#e0d4ff;
+  --mono:ui-monospace,Consolas,"Courier New",monospace;
+}
+
+*{box-sizing:border-box}
+body{
+  margin:0;background:var(--bg);color:var(--text);
+  font:14px/1.6 system-ui,-apple-system,"Segoe UI","Microsoft YaHei",sans-serif;
+  -webkit-font-smoothing:antialiased;
+}
+.wrap{max-width:1200px;margin:0 auto;padding:26px 24px 90px}
+
+/* ---------- 顶部 ---------- */
+.top{display:flex;align-items:flex-start;justify-content:space-between;gap:20px;margin-bottom:18px}
+.top h1{font-size:19px;font-weight:600;margin:0 0 4px}
+.top p{margin:0;color:var(--text2);font-size:13px}
+
+.srcbar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+.src-tag{
+  font-size:11px;border-radius:999px;padding:4px 11px;white-space:nowrap;
+  color:var(--text2);background:#f2f4f7;border:1px solid var(--line);
+}
+.src-tag.live{color:var(--green);background:var(--green-bg);border-color:var(--green-line)}
+.src-tag.snapshot{color:var(--blue);background:var(--blue-bg);border-color:var(--blue-line)}
+.src-tag.fail{color:var(--red);background:var(--red-bg);border-color:var(--red-line)}
+
+/* ---------- 步骤条 ---------- */
+.stepbar{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap}
+.step{
+  display:flex;align-items:center;gap:9px;padding:9px 15px 9px 11px;
+  background:var(--card);border:1px solid var(--line);border-radius:10px;
+  cursor:pointer;font-size:13px;color:var(--text2);transition:.15s;
+}
+.step:hover{border-color:var(--line2)}
+.step .num{
+  width:21px;height:21px;border-radius:50%;background:#eef0f4;color:var(--text2);
+  display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:600;flex:none;
+}
+.step.on{border-color:var(--blue-line);background:var(--blue-bg);color:var(--blue);font-weight:500}
+.step.on .num{background:var(--blue);color:#fff}
+.step.done .num{background:var(--green);color:#fff}
+.step.done{color:var(--text)}
+
+/* ---------- 卡片 ---------- */
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:20px 22px;margin-bottom:16px}
+.card-head{display:flex;align-items:center;justify-content:space-between;gap:16px;margin-bottom:6px;flex-wrap:wrap}
+.card h2{font-size:15px;font-weight:600;margin:0}
+.card .desc{color:var(--text2);font-size:13px;margin:0 0 16px}
+h3.sec{font-size:13px;font-weight:600;margin:0}
+
+/* ---------- 统计块 ---------- */
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px}
+.stat{background:#fafbfc;border:1px solid var(--line);border-radius:10px;padding:13px 15px}
+.stat .k{font-size:12px;color:var(--text2)}
+.stat .v{font-size:21px;font-weight:600;margin-top:3px;letter-spacing:-.01em}
+.stat .u{font-size:12px;color:var(--text3);font-weight:400;margin-left:3px}
+
+/* ---------- 筛选区 ---------- */
+.filters{display:flex;gap:10px;flex-wrap:wrap;align-items:flex-end;padding:14px;background:#fafbfc;border:1px solid var(--line);border-radius:10px;margin-bottom:16px}
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12px;color:var(--text2)}
+input[type=text]{
+  height:34px;padding:0 11px;border:1px solid var(--line2);border-radius:8px;
+  font:inherit;font-size:13px;background:#fff;color:var(--text);outline:none;min-width:190px;
+}
+input[type=text]:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(37,99,235,.1)}
+select{
+  height:34px;padding:0 9px;border:1px solid var(--line2);border-radius:8px;
+  font:inherit;font-size:13px;background:#fff;color:var(--text);outline:none;
+}
+.btn{
+  height:34px;padding:0 15px;border-radius:8px;border:1px solid var(--line2);background:#fff;
+  color:var(--text);font:inherit;font-size:13px;cursor:pointer;transition:.15s;
+}
+.btn:hover{background:#f7f8fa}
+.btn.primary{background:var(--blue);border-color:var(--blue);color:#fff}
+.btn.primary:hover{background:#1d4ed8}
+.btn.sm{height:28px;padding:0 11px;font-size:12px}
+.btn:disabled{opacity:.45;cursor:not-allowed}
+
+/* ---------- 扫描结果表 ---------- */
+.tablewrap{max-height:430px;overflow:auto;border:1px solid var(--line);border-radius:10px}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead th{
+  position:sticky;top:0;background:#fafbfc;text-align:left;font-weight:500;color:var(--text2);
+  font-size:12px;padding:9px 12px;border-bottom:1px solid var(--line);white-space:nowrap;z-index:1;
+}
+tbody td{padding:9px 12px;border-bottom:1px solid #f1f3f6;vertical-align:middle;white-space:nowrap}
+tbody tr:last-child td{border-bottom:none}
+tbody tr:hover{background:#fafbfc}
+tr.mine{background:#fbfdff}
+tr.mine:hover{background:#f5f9ff}
+.mono{font-family:var(--mono);font-size:12px}
+.ssid-hide{color:var(--text3);font-style:italic}
+input.apname{
+  width:118px;height:28px;padding:0 9px;font-size:12px;min-width:0;font-family:var(--mono);
+}
+
+/* ---------- 标签 ---------- */
+.tag{display:inline-block;font-size:11px;padding:2px 8px;border-radius:6px;line-height:1.5;border:1px solid transparent}
+.tag.blue{background:var(--blue-bg);color:var(--blue);border-color:var(--blue-line)}
+.tag.amber{background:var(--amber-bg);color:var(--amber);border-color:var(--amber-line)}
+.tag.red{background:var(--red-bg);color:var(--red);border-color:var(--red-line)}
+.tag.green{background:var(--green-bg);color:var(--green);border-color:var(--green-line)}
+.tag.gray{background:#f2f4f7;color:var(--text2);border-color:var(--line)}
+.tag.violet{background:var(--violet-bg);color:var(--violet);border-color:var(--violet-line)}
+
+/* ---------- 信号强度条 ---------- */
+.rssi{display:inline-flex;align-items:center;gap:7px}
+.rssi b{font-weight:500;font-family:var(--mono);font-size:12px;min-width:44px}
+.bars{display:flex;align-items:flex-end;gap:2px;height:12px}
+.bars i{width:3px;background:var(--line2);border-radius:1px}
+.bars i.a{background:var(--green)}
+.bars i.b{background:var(--amber)}
+.bars i.c{background:var(--red)}
+.bars i:nth-child(1){height:4px}.bars i:nth-child(2){height:7px}
+.bars i:nth-child(3){height:10px}.bars i:nth-child(4){height:12px}
+
+/* ---------- 规划网格 ---------- */
+.layout{display:grid;grid-template-columns:1fr 340px;gap:16px;align-items:start}
+.plan{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}
+.apcell{
+  background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px;
+  transition:.15s;cursor:default;
+}
+.apcell:hover{border-color:var(--blue-line);box-shadow:0 2px 10px rgba(16,24,40,.05)}
+.apcell .n{font-size:13px;font-weight:600;display:flex;align-items:center;justify-content:space-between;gap:6px}
+.apcell .sub{font-size:11px;color:var(--text3);font-family:var(--mono);margin-top:3px;overflow:hidden;text-overflow:ellipsis}
+.switchrow{display:flex;gap:6px;margin-top:10px}
+.sw{
+  flex:1;text-align:center;font-size:11px;padding:5px 0;border-radius:7px;
+  border:1px solid var(--line);background:#fff;color:var(--text3);cursor:pointer;user-select:none;transition:.15s;
+}
+.sw:hover{border-color:var(--line2)}
+.sw.on{background:var(--blue-bg);border-color:var(--blue-line);color:var(--blue);font-weight:500}
+/* 没有对应射频时是禁用态，"无射频"三个字要还能看清 */
+.sw.disabled{cursor:not-allowed;background:#f7f8fa;color:var(--text3)}
+/* 只用来显示、不接受点击的格子（例如 5G 那一格） */
+.sw.static{cursor:default;pointer-events:none}
+
+/* ---------- 逐台确认 ---------- */
+.apnav{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:16px}
+.apdot{
+  display:flex;align-items:center;gap:6px;padding:6px 13px;border-radius:999px;
+  border:1px solid var(--line);background:#fff;font-size:12px;color:var(--text3);
+  cursor:pointer;user-select:none;transition:.15s;
+}
+.apdot:hover{border-color:var(--line2)}
+.apdot.cur{border-color:var(--blue);background:var(--blue-bg);color:var(--blue);font-weight:500}
+.apdot.done{border-color:var(--green-line);background:var(--green-bg);color:var(--green);font-weight:500}
+.apdot .tick{width:12px;height:12px;flex:none}
+
+.askwrap{display:grid;grid-template-columns:1fr 300px;gap:16px;align-items:start}
+.askcard{border:1px solid var(--line);border-radius:12px;overflow:hidden}
+.askhead{
+  display:flex;justify-content:space-between;gap:16px;align-items:flex-start;
+  padding:14px 16px;background:#fafbfc;border-bottom:1px solid var(--line);flex-wrap:wrap;
+}
+.asktitle{font-size:15px;font-weight:600}
+.asksub{font-size:12px;color:var(--text2);margin-top:3px;max-width:430px}
+.asklist{padding:8px}
+.askrow{
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:11px 12px;border-radius:9px;border:1px solid transparent;cursor:pointer;transition:.12s;
+}
+.askrow:hover{background:#fafbfc;border-color:var(--line)}
+.askrow + .askrow{margin-top:2px}
+.askrow .l{min-width:0}
+.askrow .nm{font-size:13.5px;font-weight:600;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.askrow .mt{font-size:11.5px;color:var(--text3);font-family:var(--mono);margin-top:3px}
+.askrow.locked{cursor:default;background:#fafbfc}
+.askrow.locked:hover{border-color:transparent}
+.toggle2{display:flex;flex:none;border:1px solid var(--line2);border-radius:8px;overflow:hidden}
+.toggle2 span{padding:6px 13px;font-size:12px;color:var(--text2);background:#fff;transition:.12s;white-space:nowrap}
+.toggle2 .y.on{background:var(--blue);color:#fff;font-weight:500}
+.toggle2 .n.on{background:#eef0f4;color:var(--text);font-weight:500}
+.mini{font-size:11px;padding:1px 7px;border-radius:5px;font-weight:400}
+.mini.guess{background:#f2f4f7;color:var(--text3)}
+.mini.edited{background:var(--blue-bg);color:var(--blue)}
+.mini.lock{background:#f2f4f7;color:var(--text3)}
+
+.sidecard{border:1px solid var(--line);border-radius:12px;padding:14px 16px;background:#fafbfc}
+.sidecard h3{font-size:13px;font-weight:600;margin:0 0 10px}
+.adjs{display:flex;flex-wrap:wrap;gap:6px;max-height:320px;overflow:auto}
+.adjs .p{font-size:11.5px;font-family:var(--mono);background:#fff;border:1px solid var(--line);border-radius:6px;padding:3px 8px;color:var(--text2)}
+.adjs .empty{font-size:12px;color:var(--text3)}
+
+/* ---------- 结果表 ---------- */
+.out{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+.outcol h3{font-size:13px;font-weight:600;margin:0 0 10px;display:flex;align-items:center;gap:8px}
+.outcol h3 span{font-size:11px;font-weight:400;color:var(--text3)}
+.aptable{width:100%;border-collapse:collapse;font-size:12.5px}
+.aptable th{text-align:left;font-weight:500;font-size:11.5px;color:var(--text2);padding:7px 9px;border-bottom:1px solid var(--line);white-space:nowrap}
+.aptable td{padding:7px 9px;border-bottom:1px solid #f4f6f8;vertical-align:top}
+.aptable tr:last-child td{border-bottom:none}
+.arrow{color:var(--text3);padding:0 4px}
+.reason{font-size:11.5px;color:var(--text2);line-height:1.5;margin-top:4px;max-width:330px;white-space:normal}
+.chip{
+  display:inline-block;font-family:var(--mono);font-size:11.5px;padding:1px 7px;border-radius:5px;
+  background:#f2f4f7;color:var(--text2);border:1px solid var(--line);
+}
+.chip.new{background:var(--green-bg);color:var(--green);border-color:var(--green-line);font-weight:500}
+.chip.keep{background:#f2f4f7;color:var(--text2)}
+.chip.bad{background:var(--red-bg);color:var(--red);border-color:var(--red-line)}
+
+/* ---------- 频谱占用 ---------- */
+.spectrum{margin-top:6px}
+.spec-row{display:flex;gap:14px;align-items:flex-start;margin-bottom:20px}
+.spec-label{width:74px;flex:none;font-size:12px;color:var(--text2);padding-top:2px}
+.spec-track{flex:1;display:flex;gap:5px;overflow-x:auto;padding-bottom:6px}
+.slot{width:70px;flex:none;text-align:center}
+.slot .ours{height:18px;margin-bottom:4px}
+.slot .ours span{
+  display:inline-block;background:var(--blue);color:#fff;font-size:10.5px;font-weight:500;
+  padding:1px 6px;border-radius:5px;font-family:var(--mono);
+  max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+}
+.slot .barzone{height:64px;display:flex;align-items:flex-end;justify-content:center;background:#f7f8fa;border-radius:6px;position:relative}
+.slot .bar{width:26px;border-radius:4px 4px 0 0;background:var(--amber-line)}
+.slot .bar.hot{background:#f0a58a}
+.slot .bar.dim{background:#e8eaee}
+.slot .nm{font-size:10px;color:var(--text3);margin-top:4px;height:26px;overflow:hidden;line-height:1.3}
+.slot .ch{font-size:11.5px;font-weight:500;font-family:var(--mono);margin-top:2px}
+.slot .fq{font-size:10px;color:var(--text3);font-family:var(--mono)}
+.slot.noise .barzone{opacity:.55}
+.slot.noise .ch{color:var(--text3)}
+
+/* ---------- 说明卡片 ---------- */
+.why{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.why .item{background:#fafbfc;border:1px solid var(--line);border-radius:10px;padding:13px 15px}
+.why .item b{font-size:12.5px;font-weight:600;display:block;margin-bottom:4px}
+.why .item p{margin:0;font-size:12.5px;color:var(--text2)}
+
+/* ---------- 横幅 ---------- */
+.banner{
+  display:flex;gap:11px;align-items:flex-start;padding:12px 15px;border-radius:10px;
+  font-size:12.5px;margin-bottom:16px;border:1px solid;
+}
+.banner.warn{background:var(--amber-bg);border-color:var(--amber-line);color:#7a4a08}
+.banner.info{background:var(--blue-bg);border-color:var(--blue-line);color:#1e40af}
+.banner.ok{background:var(--green-bg);border-color:var(--green-line);color:#05603a}
+.banner.bad{background:var(--red-bg);border-color:var(--red-line);color:#912018}
+.banner b{font-weight:600}
+.banner .ico{width:16px;height:16px;flex:none;margin-top:2px}
+
+/* ---------- 其它 ---------- */
+.footbar{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-top:6px}
+.footbar .hint{font-size:12.5px;color:var(--text2)}
+.hidden{display:none!important}
+.note{font-size:11.5px;color:var(--text3);margin-top:10px}
+code{font-family:var(--mono);font-size:11.5px;background:#f2f4f7;padding:1px 5px;border-radius:4px}
+
+/* ---------- 窄屏 ---------- */
+@media (max-width:900px){
+  .grid4{grid-template-columns:repeat(2,1fr)}
+  .layout,.askwrap,.out{grid-template-columns:1fr}
+  .plan{grid-template-columns:repeat(2,1fr)}
+  .why{grid-template-columns:1fr}
+}
